@@ -59,6 +59,11 @@ const LogIn = () => {
   };
 
   return (
+    <div className="h-screen">
+        <div>
+            <h1>Dummy username : bond</h1>
+            <h1>Dummy password : banana</h1>
+    </div>
     <div className="h-screen flex justify-center items-center">
       <Card className="w-[350px]">
         <CardHeader>
@@ -113,6 +118,7 @@ const LogIn = () => {
           </p>
         </CardFooter>
       </Card>
+    </div>
     </div>
   );
 };
