@@ -65,18 +65,19 @@ const AddProductForm = ({ onClose, addProductToList }: AddProductFormProps) => {
         if (!token) {
           toast.error("User not authenticated.");
           return;
-        }
-        console.log("post called------>")
-  
+        }  
         const response = await axios.post(`${BASE_URL}/product`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
+
   
         toast.success("Product added successfully!");
         const newProduct = response.data["added product"];
+        console.log("type of new product")
+        console.log(newProduct);
         addProductToList(newProduct);
         onClose();
         console.log(response.data);

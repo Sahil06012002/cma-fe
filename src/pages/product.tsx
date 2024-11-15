@@ -78,7 +78,6 @@ const Product = () => {
   };
 
   const addProductToList = (newProduct: Product) => {
-    console.log(newProduct)
     setProducts((prevProducts) => [newProduct, ...prevProducts]);
   };
   return (

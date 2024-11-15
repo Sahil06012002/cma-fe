@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BASE_URL from "@/constants";
+import { Button } from "@/components/ui/button";
 
 interface ProductDetail {
   title: string;
@@ -19,6 +20,7 @@ interface ProductDetailResponse {
   }
 const ProductDetail = () => {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const [productDetail, setProductDetail] = useState<ProductDetail | null>(null);
     const [productImages, setProductImages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
@@ -54,10 +56,17 @@ const ProductDetail = () => {
   
     if (loading) return <p>Loading product details...</p>;
     if (error) return <p>{error}</p>;
+    const handleBack = () => {
+        navigate("/product"); // Navigate to /product route
+      };
   
     return (
-      <div className="flex max-w-4xl mx-auto mt-8 border border-gray-300 shadow-sm p-4">
-        {/* Left side: Product details */}
+      <div className="m-10">
+        <div>
+        <Button onClick={handleBack} className="mb-4">
+        ← Back
+      </Button>        </div>
+        <div className="flex max-w-4xl mx-auto mt-8 border border-gray-300 shadow-sm p-4">
         <div className="flex-1 mr-8">
           <Card>
             <CardHeader>
@@ -72,7 +81,6 @@ const ProductDetail = () => {
           </Card>
         </div>
   
-        {/* Right side: Product images */}
         <div className="flex-1">
           <h3 className="text-lg font-semibold mb-4">Product Images</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -86,6 +94,7 @@ const ProductDetail = () => {
             ))}
           </div>
         </div>
+      </div>
       </div>
     );
   };
