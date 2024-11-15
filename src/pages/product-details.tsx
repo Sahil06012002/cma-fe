@@ -4,6 +4,8 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BASE_URL from "@/constants";
 import { Button } from "@/components/ui/button";
+import Modal from "@/components/modal";
+import EditProductForm from "./edit-product-form";
 
 interface ProductDetail {
   title: string;
@@ -25,10 +27,10 @@ const ProductDetail = () => {
     const [productImages, setProductImages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [visibility,setVisibility] = useState(false)
   
     useEffect(() => {
       const token = localStorage.getItem("access_token");
-  
       const fetchProductDetail = async () => {
         try {
           const response = await axios.get<ProductDetailResponse>(`${BASE_URL}/product/${id}`, {
@@ -80,6 +82,13 @@ const ProductDetail = () => {
           setError("User not authenticated.");
         }
       };
+
+      const handleVisibility = () => {
+        setVisibility(!visibility)
+      }
+      const onUpdate = (updataed_product : ProductDetail) => {
+        setProductDetail(updataed_product)
+      }
   
     return (
       <div className="m-10">
@@ -88,9 +97,14 @@ const ProductDetail = () => {
         ← Back
       </Button> 
 
+        <div className="flex felx-column gap-2">
         <Button onClick={handleDelete} className="mb-4 bg-red-600 hover:bg-red-700">
-          Delete Product
+          Delete
         </Button>
+        <Button onClick={handleVisibility} className="mb-4">
+          Edit
+        </Button>
+        </div>
       
       </div>
         <div className="flex max-w-4xl mx-auto mt-8 border border-gray-300 shadow-sm p-4">
@@ -122,6 +136,14 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+            <div>
+              {
+                visibility && <Modal onClose={handleVisibility}>
+                <EditProductForm productDetails={productDetail} onClose={handleVisibility} onUpdate={onUpdate}></EditProductForm>
+              </Modal>
+              }
+            </div>
+
       </div>
     );
   };

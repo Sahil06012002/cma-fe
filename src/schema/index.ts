@@ -54,3 +54,23 @@ images: z
   "Only .jpg, .jpeg, .png, and .webp formats are supported."
 ),
   });
+
+  export const EditProductSchema = z.object({
+    title: z.string({message: "Enter valid title"}).min(1, "Title is required"),
+
+    product_tag: z.string({
+        message: "Enter valid product_tag"
+}).min(1, "Product tag is required"),
+
+    dealer: z.string({
+        message: "Enter valid dealer"
+}).optional(),
+
+    description: z.string({
+        message: "Enter valid description"
+}).optional(),
+
+    company: z.string({
+        message: "Enter valid company"
+}).optional(),
+  });
