@@ -21,6 +21,9 @@ export const LoginSchema = z.object({
 })
 })
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ACCEPTED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 export const ProductSchema = z.object({
     title: z.string({message: "Enter valid title"}).min(1, "Title is required"),
 
@@ -39,5 +42,15 @@ export const ProductSchema = z.object({
     company: z.string({
         message: "Enter valid company"
 }).optional(),
-    // images: z.array(z.instanceof(File).optional()).max(10, "You can upload up to 10 images only"),
+images: z
+.array(z.instanceof(File))
+.max(10, "You can upload up to 10 images only")
+.refine(
+  (files) => files.every(file => file.size <= MAX_FILE_SIZE),
+  "Each image must be less than 5MB."
+)
+.refine(
+  (files) => files.every(file => ACCEPTED_IMAGE_MIME_TYPES.includes(file.type)),
+  "Only .jpg, .jpeg, .png, and .webp formats are supported."
+),
   });
