@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoginSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
@@ -26,6 +26,12 @@ const LogIn = () => {
       password: "",
     },
   });
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      navigate("/product");
+    }
+  }, [navigate]);
 
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     setLoading(true);

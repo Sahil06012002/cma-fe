@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { SignUpSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
@@ -29,6 +29,12 @@ const SignUp = () => {
         email: "",
       },
     });
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+          navigate("/product");
+        }
+      }, [navigate]);
   
     const onSubmit = async (data: z.infer<typeof SignUpSchema>) => {
       setLoading(true);

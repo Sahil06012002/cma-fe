@@ -1,155 +1,194 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Form } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
 
 import { toast } from "react-toastify";
 import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProductSchema } from "@/schema";
+import { z } from "zod";
 
-interface ProductFormData {
-  title: string;
-  description: string;
-  product_tag: string;
-  company: string;
-  dealer: string;
-  photos: FileList | null;
+interface AddProductFormProps {
+  onClose: () => void;
+  addProductToList: (newProduct: any) => void;
 }
 
-const AddProductForm = () => {
-  const [loading, setLoading] = useState(false);
-  const { control, handleSubmit, formState: { errors } } = useForm<ProductFormData>();
-
-  const onSubmit = async (data: ProductFormData) => {
-    if (!data.photos || data.photos.length > 10) {
-      toast.error("You can upload up to 10 photos only.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("product_tag", data.product_tag);
-    formData.append("company", data.company);
-    formData.append("dealer", data.dealer);
-
-    // Append images to FormData
-    Array.from(data.photos).forEach((photo, index) => {
-      formData.append(`photos[${index}]`, photo);
-    });
-
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        toast.error("User not authenticated.");
-        return;
+const AddProductForm = ({ onClose, addProductToList }: AddProductFormProps) => {
+    const [loading, setLoading] = useState(false);
+  
+    const form = useForm({
+      resolver: zodResolver(ProductSchema),
+      defaultValues: {
+        title: "",
+        product_tag: "",
+        dealer: "",
+        description: "",
+        company: "",
+        // images: []
       }
-
-      const response = await axios.post("http://127.0.0.1:8000/product", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      toast.success("Product added successfully!");
-      console.log(response.data); // Handle success response
-    } catch (error) {
-      toast.error("Error adding product.");
-      console.error(error); // Handle error response
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="max-w-lg mx-auto p-6">
-      <h2 className="text-xl font-bold mb-4">Add Product</h2>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <Label htmlFor="title">Product Title</Label>
-          <Controller
-            name="title"
-            control={control}
-            rules={{ required: "Product title is required." }}
-            render={({ field }) => (
-              <Input {...field} id="title" placeholder="Enter product title" />
-            )}
-          />
-          {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-        </div>
-
-        <div className="mb-4">
-          <Label htmlFor="description">Description</Label>
-          <Controller
-            name="description"
-            control={control}
-            rules={{ required: "Product description is required." }}
-            render={({ field }) => (
-              <Textarea {...field} id="description" placeholder="Enter product description" />
-            )}
-          />
-          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-        </div>
-
-        <div className="mb-4">
-          <Label htmlFor="product_tag">Product Tag</Label>
-          <Controller
-            name="product_tag"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} id="product_tag" placeholder="Enter product tag" />
-            )}
-          />
-        </div>
-
-        <div className="mb-4">
-          <Label htmlFor="company">Company</Label>
-          <Controller
-            name="company"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} id="company" placeholder="Enter company name" />
-            )}
-          />
-        </div>
-
-        <div className="mb-4">
-          <Label htmlFor="dealer">Dealer</Label>
-          <Controller
-            name="dealer"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} id="dealer" placeholder="Enter dealer name" />
-            )}
-          />
-        </div>
-
-        <div className="mb-4">
-          <Label htmlFor="photos">Product Photos (Max: 10)</Label>
-          <Controller
-            name="photos"
-            control={control}
-            rules={{ required: "Please upload at least one photo." }}
-            render={({ field }) => (
-              <Input {...field} type="file" accept="image/*" multiple />
-            )}
-          />
-          {errors.photos && <p className="text-red-500 text-sm">{errors.photos.message}</p>}
-        </div>
-
-        <div className="flex justify-center mt-6">
-          <Button type="submit" loading={loading} className="w-full">
-            Add Product
+    });
+  
+    const onSubmit = async (data: z.infer<typeof ProductSchema>) => {
+      // if (!data.images || data.images.length > 10) {
+      //   toast.error("You can upload up to 10 photos only.");
+      //   return;
+      // }
+  
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description || "");
+      formData.append("product_tag", data.product_tag || "");
+      formData.append("company", data.company || "");
+      formData.append("dealer", data.dealer || "");
+  
+      // Append images to FormData
+      // Array.from(data.images).forEach((image, index) => {
+      //   formData.append(`photos[${index}]`, image || []);
+      // });
+  
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          toast.error("User not authenticated.");
+          return;
+        }
+        console.log("post called------>")
+  
+        const response = await axios.post("http://127.0.0.1:8000/product", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+  
+        toast.success("Product added successfully!");
+        const newProduct = response.data["added product"];
+        addProductToList(newProduct);
+        onClose();
+        console.log(response.data);
+      } catch (error) {
+        toast.error("Error adding product.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <div className="max-w-lg mx-auto p-6">
+        <h2 className="text-xl font-bold mb-4">Add Product</h2>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Product Title" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="product_tag"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Product Tag</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Product Tag" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="dealer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dealer</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Dealer Name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} placeholder="Product Description" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="company"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Company Name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            {/* <FormField
+              control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload Images (Max 10)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+  
+            <Button type="submit" disabled={loading}>
+              {loading ? "Submitting..." : "Add Product"}
+            </Button>
+            <Button
+            type="button"
+            onClick={onClose}
+            variant="outline"
+            className="ml-2"
+          >
+            Cancel
           </Button>
-        </div>
-      </Form>
-    </div>
-  );
-};
-
-export default AddProductForm;
+          </form>
+        </Form>
+      </div>
+    );
+  };
+  
+  export default AddProductForm;
