@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "@/components/modal";
 import AddProductForm from "./add-product-form";
 import { Button } from "@/components/ui/button";
+import BASE_URL from "@/constants";
 
 interface Product {
   id: number;
@@ -36,7 +37,7 @@ const Product = () => {
 
     try {
       const response = await axios.get<{ "product list": Product[] }>(
-        `http://127.0.0.1:8000/product${keyword ? `?keyword=${keyword}` : ""}`,
+        `${BASE_URL}/product${keyword ? `?keyword=${keyword}` : ""}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

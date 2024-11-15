@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BASE_URL from "@/constants";
 
 interface ProductDetail {
   title: string;
@@ -24,7 +25,7 @@ const ProductDetail = () => {
 
     const fetchProductDetail = async () => {
       try {
-        const response = await axios.get<{ "product details": ProductDetail }>(`http://127.0.0.1:8000/product/${id}`, {
+        const response = await axios.get<{ "product details": ProductDetail }>(`${BASE_URL}/product/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

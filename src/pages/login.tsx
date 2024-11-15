@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "@/constants";
 const LogIn = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const LogIn = () => {
       formData.append("username", data.username);
       formData.append("password", data.password);
 
-      const response = await axios.post("http://127.0.0.1:8000/user/login", formData, {
+      const response = await axios.post(`${BASE_URL}/user/login`, formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },

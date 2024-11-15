@@ -11,6 +11,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProductSchema } from "@/schema";
 import { z } from "zod";
+import BASE_URL from "@/constants";
 
 interface AddProductFormProps {
   onClose: () => void;
@@ -59,7 +60,7 @@ const AddProductForm = ({ onClose, addProductToList }: AddProductFormProps) => {
         }
         console.log("post called------>")
   
-        const response = await axios.post("http://127.0.0.1:8000/product", formData, {
+        const response = await axios.post(`${BASE_URL}/product`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",

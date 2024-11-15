@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "@/constants";
 
 
 const SignUp = () => {
@@ -39,7 +40,7 @@ const SignUp = () => {
     const onSubmit = async (data: z.infer<typeof SignUpSchema>) => {
       setLoading(true);
       try {
-        const response = await axios.post("http://127.0.0.1:8000/user/signup", data, {
+        const response = await axios.post(`${BASE_URL}/user/signup`, data, {
           headers: {
             "Content-Type": "application/json",
           },
