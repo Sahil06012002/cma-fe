@@ -57,15 +57,42 @@ const ProductDetail = () => {
     if (loading) return <p>Loading product details...</p>;
     if (error) return <p>{error}</p>;
     const handleBack = () => {
-        navigate("/product"); // Navigate to /product route
+        navigate("/product"); 
+      };
+
+      const handleDelete = async () => {
+        const token = localStorage.getItem("access_token");
+    
+        if (token) {
+          try {
+            const response = await axios.delete(`${BASE_URL}/product/${id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            if (response.status === 200) {
+              navigate("/product"); 
+            }
+          } catch (err) {
+            setError("Failed to delete product.");
+          }
+        } else {
+          setError("User not authenticated.");
+        }
       };
   
     return (
       <div className="m-10">
-        <div>
+        <div className="flex justify-between">
         <Button onClick={handleBack} className="mb-4">
         ← Back
-      </Button>        </div>
+      </Button> 
+
+        <Button onClick={handleDelete} className="mb-4 bg-red-600 hover:bg-red-700">
+          Delete Product
+        </Button>
+      
+      </div>
         <div className="flex max-w-4xl mx-auto mt-8 border border-gray-300 shadow-sm p-4">
         <div className="flex-1 mr-8">
           <Card>
