@@ -8,6 +8,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Input } from "@/components/ui/input";
 import { LoginSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,12 +30,35 @@ const LogIn = () => {
       password: "",
     },
   });
+ 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      navigate("/product");
-    }
+    console.log("Verifying token...");
+  
+    const verifyToken = async () => {
+      const token = localStorage.getItem("access_token");
+      if(token){
+        try {
+          const response = await axios.get(`${BASE_URL}/user/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          const status = response.data.status;
+          if (status) {
+            navigate("/product");
+          } else {
+            toast.error("Login or signup failed. Please try again.");
+          }
+        } catch (error) {
+          toast.error("An error occurred. Please try logging in again.");
+        }
+      };
+      }
+  
+    verifyToken();
   }, [navigate]);
+  
 
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     setLoading(true);

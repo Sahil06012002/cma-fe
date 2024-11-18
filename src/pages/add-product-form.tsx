@@ -94,7 +94,7 @@ const AddProductForm = ({ onClose, addProductToList }: AddProductFormProps) => {
   <h2 className="text-xl font-bold mb-4">Add Product</h2>
   <div
     className="overflow-y-auto max-h-[80vh] p-4 border border-gray-200 rounded-lg"
-    style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }} // Optional custom scrollbar styles
+    style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}
   >
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
