@@ -17,6 +17,7 @@ import { z } from "zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "@/constants";
+import { toast } from "react-toastify";
 
 
 const SignUp = () => {
@@ -31,11 +32,32 @@ const SignUp = () => {
       },
     });
     useEffect(() => {
+      console.log("Verifying token...");
+    
+      const verifyToken = async () => {
         const token = localStorage.getItem("access_token");
-        if (token) {
-          navigate("/product");
+        if(token){
+          try {
+            const response = await axios.get(`${BASE_URL}/user/me`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+      
+            const status = response.data.status;
+            if (status) {
+              navigate("/product");
+            } else {
+              toast.error("Login or signup failed. Please try again.");
+            }
+          } catch (error) {
+            toast.error("An error occurred. Please try logging in again.");
+          }
+        };
         }
-      }, [navigate]);
+    
+      verifyToken();
+    }, [navigate]);
   
     const onSubmit = async (data: z.infer<typeof SignUpSchema>) => {
       setLoading(true);
